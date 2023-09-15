@@ -1,11 +1,11 @@
-import { useState } from "react";
 import "./App.css";
-import Countries from "./components/Countries/Countries";
+import Calendar from "./components/Calendar/Calendar";
 
 function App() {
   return (
     <div>
-      <Countries />
+      <Calendar />
+      {/* <ModalWrap /> */}
     </div>
   );
 }

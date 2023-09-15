@@ -1,5 +1,6 @@
 import useFetch from "../../hooks/useFetch";
 import api from "../../api";
+import { CountriesGrid, Country } from "./styles";
 
 const Countries = () => {
   const { data, isloading, error } = useFetch(api.calendar.getCountries);
@@ -8,17 +9,20 @@ const Countries = () => {
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return <div>No user found</div>;
 
-  console.log("Countries", data);
-
   return (
     <div>
-      <ul>
+      <CountriesGrid>
         <>
           {data.map(coutnry => (
-            <li key={coutnry.countryCode}>{coutnry.name}</li>
+            <Country key={coutnry.countryCode}>
+              <img
+                src={`https://flagsapi.com/${coutnry.countryCode}/flat/64.png`}
+              />
+              {coutnry.name}
+            </Country>
           ))}
         </>
-      </ul>
+      </CountriesGrid>
     </div>
   );
 };

@@ -1,5 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Mooli&display=swap');
+
 * {
   padding: 0;
   margin: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
+}
+
+body {
+  background-color: rgb(218, 218, 218);
+  font-family: 'Mooli', sans-serif;
 }
