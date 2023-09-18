@@ -136,7 +136,6 @@ const WeekRow: React.FC<{
 
         return (
           <Day
-            ref={drop}
             className={`calendar-day ${
               date.getMonth() !== currentDate.getMonth() ? "inactive-day" : ""
             } ${holiday ? "holiday-day" : ""}`}
@@ -155,7 +154,7 @@ const WeekRow: React.FC<{
             )}
             <Tasks>
               {dayTask.map((task) => (
-                <li draggable ref={drag} onClick={() => null} key={task.id}>
+                <li draggable onClick={() => null} key={task.id}>
                   {task.title}
                 </li>
               ))}
