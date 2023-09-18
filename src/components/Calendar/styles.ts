@@ -44,9 +44,34 @@ export const Day = styled.td`
   ${TableCell}
   background-color: #e9e9e9;
   height: 13rem;
+  width: 0%;
 
   &.inactive-day {
     background-color: #f9f9f9;
     color: #b0b0b0;
+  }
+
+  .holiday-day {
+    background-color: #ffcccb; /* Яскраво-червоний колір для виділення святкового дня */
+  }
+
+  .holiday-label {
+    display: block;
+    font-size: 0.8em;
+    color: red;
+  }
+`;
+
+export const Tasks = styled.ul`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  list-style: none;
+
+  li {
+    margin: 0.1rem;
+    border: solid 1px #cacaca;
+    border-radius: 5px;
+    padding: 0.5rem;
   }
 `;

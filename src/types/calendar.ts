@@ -1,4 +1,4 @@
-export type PublicHoliday = {
+export interface PublicHoliday {
   date: string;
   localName: string;
   name: string;
@@ -8,17 +8,24 @@ export type PublicHoliday = {
   counties: string[];
   launchYear: number;
   types: string[];
-};
+}
 
-export type CountryType = {
+export interface CountryType {
   countryCode: string;
   name: string;
-};
+}
 
-export type CountryInfo = {
+export interface CountryInfo {
   commonName: string;
   officialName: string;
   countryCode: string;
   region: string;
   borders: string[];
-};
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+}

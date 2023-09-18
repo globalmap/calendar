@@ -1,5 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-import { CountryType, PublicHoliday } from "../types/calendar";
+import axios from "axios";
+
+import type { AxiosInstance } from "axios";
+import type { CountryType, PublicHoliday } from "../types/calendar";
 
 class CalendarApi {
   private api: AxiosInstance;
@@ -11,9 +13,14 @@ class CalendarApi {
     });
   }
 
-  getHolidaysForYear = async (year: number): Promise<PublicHoliday[]> => {
+  getHolidaysForYear = async (
+    year: number,
+    countryCode: string,
+  ): Promise<PublicHoliday[]> => {
     try {
-      const { data } = await this.api.get(`/api/v3/PublicHolidays/${year}/US`);
+      const { data } = await this.api.get(
+        `/api/v3/PublicHolidays/${year}/${countryCode}`,
+      );
       return data;
     } catch (err) {
       console.error("Error fetching holidays", err);

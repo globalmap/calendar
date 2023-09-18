@@ -1,27 +1,28 @@
-import { useState } from "react";
-import styled from "@emotion/styled";
+import React from "react";
+import { useDrag } from "react-dnd";
+import type { Task } from "../../types/calendar";
 
-const TaskWrapper = styled.div`
-  /* Styling for Task */
-`;
+const type = "TASK"; // Для DnD
 
-const Task: React.FC = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [taskText, setTaskText] = useState("");
+interface Props {
+  task: Task;
+  moveTask: (task: Task, date: Date) => void;
+  date: Date;
+}
 
-  return (
-    <TaskWrapper>
-      {isEditing ? (
-        <input
-          value={taskText}
-          onBlur={() => setIsEditing(false)}
-          onChange={e => setTaskText(e.target.value)}
-        />
-      ) : (
-        <span onClick={() => setIsEditing(true)}>{taskText}</span>
-      )}
-    </TaskWrapper>
-  );
+const TaskItem: React.FC<Props> = ({ task, moveTask, date }) => {
+  const [, ref] = useDrag({
+    type,
+    item: { ...task },
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult();
+      if (item && dropResult) {
+        moveTask(item, dropResult.date);
+      }
+    },
+  });
+
+  return <div ref={ref}>{task.title}</div>;
 };
 
-export default Task;
+export default TaskItem;

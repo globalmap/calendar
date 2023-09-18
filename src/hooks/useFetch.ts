@@ -1,11 +1,11 @@
-import { AxiosError } from "axios";
+import type { AxiosError } from "axios";
 import { useState, useEffect } from "react";
 
-type ApiResponse<T> = {
+interface ApiResponse<T> {
   data: T | null;
   error: AxiosError | null;
   isloading: boolean;
-};
+}
 
 type ApiMethod<R, P extends any[]> = (...args: P) => Promise<R>;
 

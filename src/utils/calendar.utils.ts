@@ -1,3 +1,9 @@
+import { Task } from "../components/Calendar/Calendar";
+import Task from "../components/Task/Task";
+import { PublicHoliday } from "../types/calendar";
+
+export const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 export const getDaysInMonth = (currentDate: Date) => {
   const startOfMonth = new Date(
     currentDate.getFullYear(),
@@ -28,4 +34,27 @@ export const getDaysInMonth = (currentDate: Date) => {
   }
 
   return daysInMonth;
+};
+
+export const findHoliday = (date: Date, holidays: PublicHoliday[]) => {
+  const matched = holidays.find((holiday) => {
+    const holidayDate = new Date(holiday.date);
+    const isMatch =
+      holidayDate.getDate() === date.getDate() &&
+      holidayDate.getMonth() === date.getMonth() &&
+      holidayDate.getFullYear() === date.getFullYear();
+    return isMatch;
+  });
+  return matched;
+};
+
+export const tasksForTheDay = (tasks: Task[], date: Date) => {
+  return tasks.filter((task) => {
+    const taskDate = new Date(task.date);
+    return (
+      taskDate.getDate() === date.getDate() &&
+      taskDate.getMonth() === date.getMonth() &&
+      taskDate.getFullYear() === date.getFullYear()
+    );
+  });
 };
