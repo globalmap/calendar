@@ -43,7 +43,7 @@ const TaskItem: React.FC<TaskProps> = ({ task, moveTask, editTask }) => {
       if (!didDrop) {
         moveTask({ draggedId: droppedId, overId: originalIndex });
       } else {
-        const dropResult = monitor.getDropResult();
+        const dropResult: any = monitor.getDropResult();
         moveTask({
           move: {
             draggedTask: item,
