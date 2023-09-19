@@ -1,10 +1,14 @@
-import { Task } from "../components/Calendar/Calendar";
-import Task from "../components/Task/Task";
-import { CalendarData, PublicHoliday } from "../types/calendar";
+import type { Task, PublicHoliday, CalendarData } from "../types/calendar";
 
 export const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MILLISECONDS_IN_A_DAY = 86400000;
 
-export const getDaysInMonth = (currentDate: Date) => {
+const areDatesEqual = (date1: Date, date2: Date): boolean =>
+  date1.getDate() === date2.getDate() &&
+  date1.getMonth() === date2.getMonth() &&
+  date1.getFullYear() === date2.getFullYear();
+
+export const getDaysInMonth = (currentDate: Date): Date[] => {
   const startOfMonth = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth(),
@@ -23,43 +27,35 @@ export const getDaysInMonth = (currentDate: Date) => {
     );
   }
 
-  while (daysInMonth[0].getDay() !== 0) {
-    daysInMonth.unshift(new Date(daysInMonth[0].getTime() - 86400000));
+  for (
+    let date = new Date(startOfMonth.getTime() - MILLISECONDS_IN_A_DAY);
+    date.getDay() !== 6;
+    date = new Date(date.getTime() - MILLISECONDS_IN_A_DAY)
+  ) {
+    daysInMonth.unshift(date);
   }
 
-  while (daysInMonth[daysInMonth.length - 1].getDay() !== 6) {
-    daysInMonth.push(
-      new Date(daysInMonth[daysInMonth.length - 1].getTime() + 86400000),
-    );
+  for (
+    let date = new Date(endOfMonth.getTime() + MILLISECONDS_IN_A_DAY);
+    date.getDay() !== 0;
+    date = new Date(date.getTime() + MILLISECONDS_IN_A_DAY)
+  ) {
+    daysInMonth.push(date);
   }
 
   return daysInMonth;
 };
 
-export const findHoliday = (date: Date, holidays: PublicHoliday[]) => {
-  const matched = holidays.find((holiday) => {
-    const holidayDate = new Date(holiday.date);
-    const isMatch =
-      holidayDate.getDate() === date.getDate() &&
-      holidayDate.getMonth() === date.getMonth() &&
-      holidayDate.getFullYear() === date.getFullYear();
-    return isMatch;
-  });
-  return matched;
-};
+export const findHoliday = (
+  date: Date,
+  holidays: PublicHoliday[],
+): PublicHoliday | undefined =>
+  holidays.find((holiday) => areDatesEqual(new Date(holiday.date), date));
 
-export const tasksForTheDay = (tasks: Task[], date: Date) => {
-  return tasks.filter((task) => {
-    const taskDate = new Date(task.date);
-    return (
-      taskDate.getDate() === date.getDate() &&
-      taskDate.getMonth() === date.getMonth() &&
-      taskDate.getFullYear() === date.getFullYear()
-    );
-  });
-};
+export const tasksForTheDay = (tasks: Task[], date: Date): Task[] =>
+  tasks.filter((task) => areDatesEqual(new Date(task.date), date));
 
-export const exportToJsonFile = (calendarData: CalendarData) => {
+export const exportToJsonFile = (calendarData: CalendarData): void => {
   const dataStr = JSON.stringify(calendarData, null, 4);
   const dataUri =
     "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);

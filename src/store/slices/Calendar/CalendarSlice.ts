@@ -58,31 +58,25 @@ export const calendarSlice = createSlice({
         };
       }>,
     ) => {
+      const tasks = [...state.tasks];
       const { draggedId, overId, move } = action.payload;
 
-      const tasks = state.tasks;
-
       if (move) {
-        const { draggedTask, targetDate } = move;
-        const updatedTasks = tasks.map((task) => {
-          if (task.id === draggedTask.id) {
-            return { ...task, date: targetDate };
-          }
-          return task;
-        });
-        state.tasks = updatedTasks;
+        const taskToUpdate = tasks.find(
+          (task) => task.id === move.draggedTask.id,
+        );
+        if (taskToUpdate) {
+          taskToUpdate.date = move.targetDate;
+        }
       } else {
-        const draggedTask = tasks.find((task) => task.id === draggedId)!;
-        const overTask = tasks.find((task) => task.id === overId)!;
-        const draggedIndex = tasks.indexOf(draggedTask);
-        const overIndex = tasks.indexOf(overTask);
-
-        const newTasks = [...tasks];
-        newTasks.splice(draggedIndex, 1);
-        newTasks.splice(overIndex, 0, draggedTask);
-
-        state.tasks = newTasks;
+        const draggedIndex = tasks.findIndex((task) => task.id === draggedId);
+        const overIndex = tasks.findIndex((task) => task.id === overId);
+        if (draggedIndex !== -1 && overIndex !== -1) {
+          const [draggedTask] = tasks.splice(draggedIndex, 1);
+          tasks.splice(overIndex, 0, draggedTask);
+        }
       }
+      state.tasks = tasks;
     },
     editTitleTask: (
       state,
@@ -131,29 +125,15 @@ export const calendarSlice = createSlice({
       action: PayloadAction<{ taskId: number; updatelabel: LabelType }>,
     ) => {
       const { taskId, updatelabel } = action.payload;
-
-      const tasks = state.tasks;
-
-      const updatedTasks = tasks.map((task) => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            labels: task.labels.map((label) => {
-              if (label.id === updatelabel.id) {
-                return {
-                  ...label,
-                  ...updatelabel,
-                };
-              }
-              return label;
-            }),
-          };
+      const taskToUpdate = state.tasks.find((task) => task.id === taskId);
+      if (taskToUpdate) {
+        const labelToUpdate = taskToUpdate.labels.find(
+          (label) => label.id === updatelabel.id,
+        );
+        if (labelToUpdate) {
+          Object.assign(labelToUpdate, updatelabel);
         }
-
-        return task;
-      });
-
-      state.tasks = updatedTasks;
+      }
     },
   },
 });
