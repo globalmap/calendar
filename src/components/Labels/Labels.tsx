@@ -4,13 +4,18 @@ import { LabelContainer, LabelWrapper } from "./styles";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch } from "react-redux";
-import { addLabelToTask } from "../../store/slices/Calendar/CalendarSlice";
+import {
+  addLabelToTask,
+  editingLabelTask,
+} from "../../store/slices/Calendar/CalendarSlice";
 
 const Labels = ({ items, taskId }: { items: LabelType[]; taskId: number }) => {
   const dispatch = useDispatch();
 
   const [isAdded, setIsAdded] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [newLabel, setNewLabel] = useState<LabelType>({
+    id: -1,
     color: "#ff0000",
     title: "",
   });
@@ -19,17 +24,39 @@ const Labels = ({ items, taskId }: { items: LabelType[]; taskId: number }) => {
     dispatch(addLabelToTask({ taskId, label: newLabel }));
     setIsAdded(false);
   };
+  const handleEditingLabel = () => {
+    dispatch(editingLabelTask({ taskId, updatelabel: newLabel }));
+    setEditing(false);
+  };
 
   return (
     <LabelWrapper>
       {items.map((label, index) => (
-        <LabelContainer key={index} style={{ background: label.color }}>
+        <LabelContainer
+          onDoubleClick={(e) => {
+            setNewLabel({
+              id: label.id,
+              title: label.title,
+              color: label.color,
+            });
+            setEditing(true);
+          }}
+          key={index}
+          style={
+            editing
+              ? { display: "none" }
+              : { display: "block", background: label.color }
+          }>
           <p>{label.title}</p>
         </LabelContainer>
       ))}
       <LabelContainer
-        style={!isAdded ? { background: "#cacaca", cursor: "pointer" } : {}}>
-        {isAdded ? (
+        style={
+          !isAdded && !editing
+            ? { background: "#cacaca", cursor: "pointer" }
+            : {}
+        }>
+        {isAdded || editing ? (
           <div
             style={{
               border: "solid 1px #cacaca",
@@ -69,7 +96,14 @@ const Labels = ({ items, taskId }: { items: LabelType[]; taskId: number }) => {
             <FontAwesomeIcon
               icon={faCheck}
               style={{ cursor: "pointer", color: "black" }}
-              onClick={handleAddingLabel}
+              onClick={() => {
+                if (isAdded) {
+                  handleAddingLabel();
+                }
+                if (editing) {
+                  handleEditingLabel();
+                }
+              }}
             />
           </div>
         ) : (

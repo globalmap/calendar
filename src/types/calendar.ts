@@ -24,6 +24,7 @@ export interface CountryInfo {
 }
 
 export interface LabelType {
+  id: number;
   title: string;
   color: string;
 }

@@ -117,6 +117,35 @@ export const calendarSlice = createSlice({
 
       state.tasks = updatedTasks;
     },
+    editingLabelTask: (
+      state,
+      action: PayloadAction<{ taskId: number; updatelabel: LabelType }>,
+    ) => {
+      const { taskId, updatelabel } = action.payload;
+
+      const tasks = state.tasks;
+
+      const updatedTasks = tasks.map((task) => {
+        if (task.id === taskId) {
+          return {
+            ...task,
+            labels: task.labels.map((label) => {
+              if (label.id === updatelabel.id) {
+                return {
+                  ...label,
+                  ...updatelabel,
+                };
+              }
+              return label;
+            }),
+          };
+        }
+
+        return task;
+      });
+
+      state.tasks = updatedTasks;
+    },
   },
 });
 
@@ -128,6 +157,7 @@ export const {
   setTask,
   addLabelToTask,
   editTitleTask,
+  editingLabelTask,
 } = calendarSlice.actions;
 
 export default calendarSlice.reducer;
