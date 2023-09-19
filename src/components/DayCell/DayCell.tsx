@@ -40,12 +40,20 @@ const DayCell: React.FC<Props> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleAddTask();
+  };
+
+  const classNames = [
+    "calendar-day",
+    inactive && "inactive-day",
+    holiday && "holiday-day",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <Day
-      ref={ref}
-      className={`calendar-day ${inactive ? "inactive-day" : ""} ${
-        holiday ? "holiday-day" : ""
-      }`}>
+    <Day ref={ref} className={classNames}>
       <p>{day}</p>
       {holiday && <span className='holiday-label'>{holiday.localName}</span>}
       {tasks.map((task) => (
@@ -56,9 +64,7 @@ const DayCell: React.FC<Props> = ({
           value={taskTitle}
           onChange={(e) => setTaskTitle(e.target.value)}
           onBlur={handleAddTask}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleAddTask();
-          }}
+          onKeyDown={handleKeyDown}
           autoFocus
         />
       ) : (

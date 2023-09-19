@@ -1,6 +1,6 @@
 import type { Task } from "./calendar";
 
-export type MoveFunction = (a: {
+export type MoveFunction = (params: {
   draggedId?: number;
   overId?: number;
   move?: {

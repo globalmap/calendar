@@ -3,12 +3,13 @@ import { useDrag, useDrop } from "react-dnd";
 import type { DragItem, Task } from "../../types/calendar";
 import type { MoveFunction } from "../../types/ui.types";
 
-const type = "TASK";
 
-const TaskItem: React.FC<{
+interface TaskProps {
   task: Task;
   moveTask: MoveFunction;
-}> = ({ task, moveTask }) => {
+}
+
+const TaskItem: React.FC<TaskProps> = ({ task, moveTask }) => {
   const originalIndex = task.id;
 
   const [, drop] = useDrop({
@@ -16,7 +17,6 @@ const TaskItem: React.FC<{
     canDrop: (item: DragItem) => item.id !== task.id,
     hover(draggedItem: DragItem) {
       if (draggedItem.id !== task.id) {
-        // moveTask(draggedItem.id, task.id);
         moveTask({ draggedId: draggedItem.id, overId: task.id });
         draggedItem.originalIndex = originalIndex;
       }
@@ -46,10 +46,13 @@ const TaskItem: React.FC<{
     },
   });
 
-  const opacity = isDragging ? 0 : 1;
+  const combineRefs =
+    (...refs: any[]) =>
+    (node: any) =>
+      refs.forEach((ref) => ref(node));
 
   return (
-    <div ref={(node) => drag(drop(node))} style={{ opacity }}>
+    <div ref={combineRefs(drag, drop)} style={{ opacity: isDragging ? 0 : 1 }}>
       {task.title}
     </div>
   );
