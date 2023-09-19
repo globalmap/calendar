@@ -20,6 +20,7 @@ import {
   updateTask,
 } from "../../store/slices/Calendar/CalendarSlice";
 import { CalendarContainer, CalendarHeader, Dates, WeekOfDay } from "./styles";
+import html2canvas from "html2canvas";
 import type { PublicHoliday } from "../../types/calendar";
 import type { MoveFunction } from "../../types/ui.types";
 
@@ -48,11 +49,36 @@ const Calendar: React.FC = () => {
     );
   };
 
+  const handleSaveAsImage = async () => {
+    const calendarElement = document.getElementById("calendar"); // Припустимо, що у вашого календаря є id="calendar"
+
+    if (calendarElement) {
+      try {
+        const canvas = await html2canvas(calendarElement);
+        const imgURL = canvas.toDataURL("image/png");
+
+        // Create a link to download the image
+        const link = document.createElement("a");
+        link.download = "calendar.png";
+        link.href = imgURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (error) {
+        console.error("Error saving calendar as image:", error);
+      }
+    }
+  };
+
   return (
-    <CalendarContainer>
-      <Header currentDate={currentDate} onMonthChange={handleMonthChange} />
-      <DateGrid currentDate={currentDate} holidays={holidays} />
-    </CalendarContainer>
+    <div>
+      <button onClick={handleSaveAsImage}>Save Calendar as Image</button>
+
+      <CalendarContainer id='calendar'>
+        <Header currentDate={currentDate} onMonthChange={handleMonthChange} />
+        <DateGrid currentDate={currentDate} holidays={holidays} />
+      </CalendarContainer>
+    </div>
   );
 };
 
