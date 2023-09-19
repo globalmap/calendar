@@ -14,7 +14,11 @@ import {
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DayCell from "../DayCell/DayCell";
-import { setTask, updateTask } from "../../store/slices/Calendar/CalendarSlice";
+import {
+  editTitleTask,
+  setTask,
+  updateTask,
+} from "../../store/slices/Calendar/CalendarSlice";
 import { CalendarContainer, CalendarHeader, Dates, WeekOfDay } from "./styles";
 import type { PublicHoliday } from "../../types/calendar";
 import type { MoveFunction } from "../../types/ui.types";
@@ -114,7 +118,11 @@ const WeekRow: React.FC<{
   };
 
   const handleAddNewTask = (title: string, date: string) => {
-    dispatch(setTask({ id: tasks.length + 1, title, date }));
+    dispatch(setTask({ id: tasks.length + 1, title, date, labels: [] }));
+  };
+
+  const handleEditTask = (taskId: number, newTitle: string) => {
+    dispatch(editTitleTask({ id: taskId, newTitle }));
   };
 
   return (
@@ -135,6 +143,7 @@ const WeekRow: React.FC<{
             moveTask={handleMoveTask}
             inactive={date.getMonth() !== currentDate.getMonth()}
             addNewTask={handleAddNewTask}
+            handleEditTask={handleEditTask}
             holiday={holiday}
           />
         );

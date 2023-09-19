@@ -18,29 +18,7 @@ const initialState: CalendarState = {
     },
   },
   publicHoliday: [],
-  tasks: [
-    {
-      id: 1,
-      title: "Task 1",
-      date: "2023-9-1",
-      labels: [{ title: "Testing", color: "red" }],
-    },
-    {
-      id: 2,
-      title: "Task 2",
-      date: "2023-9-19",
-      labels: [
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-        { title: "New Testing", color: "red" },
-      ],
-    },
-  ],
+  tasks: [],
 };
 
 export const calendarSlice = createSlice({
@@ -97,6 +75,27 @@ export const calendarSlice = createSlice({
         state.tasks = newTasks;
       }
     },
+    editTitleTask: (
+      state,
+      action: PayloadAction<{ id: number; newTitle: string }>,
+    ) => {
+      const { id, newTitle } = action.payload;
+
+      const tasks = state.tasks;
+
+      const updatedTasks = tasks.map((task) => {
+        if (task.id === id) {
+          return {
+            ...task,
+            title: newTitle,
+          };
+        }
+
+        return task;
+      });
+
+      state.tasks = updatedTasks;
+    },
     addLabelToTask: (
       state,
       action: PayloadAction<{ taskId: number; label: LabelType }>,
@@ -128,6 +127,7 @@ export const {
   updateTask,
   setTask,
   addLabelToTask,
+  editTitleTask,
 } = calendarSlice.actions;
 
 export default calendarSlice.reducer;

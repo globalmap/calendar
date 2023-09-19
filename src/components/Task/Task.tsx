@@ -1,16 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { DragItem, Task } from "../../types/calendar";
 import type { MoveFunction } from "../../types/ui.types";
 import { TaskTitle, TaskWrapper } from "./style";
 import Labels from "../Labels/Labels";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilSquare, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 interface TaskProps {
   task: Task;
   moveTask: MoveFunction;
+  editTask: (taskId: number, newTitle: string) => void;
 }
 
-const TaskItem: React.FC<TaskProps> = ({ task, moveTask }) => {
+const TaskItem: React.FC<TaskProps> = ({ task, moveTask, editTask }) => {
+  const [taskName, setTaskName] = useState(task.title);
+  const [isEditing, setEditing] = useState(false);
+
   const originalIndex = task.id;
 
   const [, drop] = useDrop({
@@ -56,9 +62,36 @@ const TaskItem: React.FC<TaskProps> = ({ task, moveTask }) => {
     <TaskWrapper
       ref={combineRefs(drag, drop)}
       style={{ opacity: isDragging ? 0 : 1 }}>
-      <Labels items={task.labels} />
+      <Labels items={task.labels} taskId={task.id} />
       <hr />
-      <TaskTitle>{task.title}</TaskTitle>
+      <TaskTitle>
+        <p>
+          {!isEditing ? (
+            <>{taskName} </>
+          ) : (
+            <>
+              <input
+                value={taskName}
+                style={{ width: "35%" }}
+                onChange={(e) => {
+                  setTaskName(e.target.value);
+                }}
+              />
+            </>
+          )}
+          <FontAwesomeIcon
+            icon={isEditing ? faCheck : faPencilSquare}
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              if (isEditing) {
+                editTask(task.id, taskName);
+              }
+
+              setEditing(!isEditing);
+            }}
+          />
+        </p>
+      </TaskTitle>
     </TaskWrapper>
   );
 };

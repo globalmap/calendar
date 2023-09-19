@@ -13,6 +13,7 @@ interface Props {
   inactive: boolean;
   holiday: PublicHoliday | undefined;
   addNewTask: (title: string, date: string) => void;
+  handleEditTask: (taskId: number, newTitle: string) => void;
 }
 
 const DayCell: React.FC<Props> = ({
@@ -23,6 +24,7 @@ const DayCell: React.FC<Props> = ({
   inactive,
   addNewTask,
   holiday,
+  handleEditTask,
 }) => {
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [taskTitle, setTaskTitle] = useState("");
@@ -62,7 +64,12 @@ const DayCell: React.FC<Props> = ({
       <p className='day-number'>{day}</p>
       {holiday && <span className='holiday-label'>{holiday.localName}</span>}
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} moveTask={moveTask} />
+        <TaskItem
+          key={task.id}
+          task={task}
+          moveTask={moveTask}
+          editTask={handleEditTask}
+        />
       ))}
       {isAddingTask && (
         <AddTaskInput
