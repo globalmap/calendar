@@ -1,4 +1,4 @@
-import { CountryType, PublicHoliday } from "../../types/calendar";
+import type { CountryType, PublicHoliday, Task } from "../../types/calendar";
 
 export interface CalendarState {
   publicHoliday: PublicHoliday[];
@@ -6,4 +6,5 @@ export interface CalendarState {
     list: CountryType[];
     current: CountryType;
   };
+  tasks: Task[];
 }

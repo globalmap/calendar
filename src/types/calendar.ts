@@ -24,8 +24,12 @@ export interface CountryInfo {
 }
 
 export interface Task {
-  id: string;
+  id: number | string;
   title: string;
-  description: string;
-  date: Date;
+  date: string;
+}
+
+export interface Day {
+  date: string; // "YYYY-MM-DD"
+  tasks: Task[];
 }

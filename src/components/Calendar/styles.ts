@@ -62,13 +62,13 @@ export const Day = styled.td`
   }
 `;
 
-export const Tasks = styled.ul`
+export const Tasks = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   list-style: none;
 
-  li {
+  div {
     margin: 0.1rem;
     border: solid 1px #cacaca;
     border-radius: 5px;

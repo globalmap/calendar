@@ -2,18 +2,17 @@ import React from "react";
 import { useDrag } from "react-dnd";
 import type { Task } from "../../types/calendar";
 
-const type = "TASK"; // Для DnD
+const type = "TASK";
 
-interface Props {
+type Props = {
   task: Task;
-  moveTask: (task: Task, date: Date) => void;
-  date: Date;
-}
+  moveTask: (draggedTask: Task, targetDate: string) => void;
+};
 
-const TaskItem: React.FC<Props> = ({ task, moveTask, date }) => {
+const TaskItem: React.FC<Props> = ({ task, moveTask }) => {
   const [, ref] = useDrag({
     type,
-    item: { ...task },
+    item: task,
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
       if (item && dropResult) {

@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
-import {
-  CalendarContainer,
-  CalendarHeader,
-  Dates,
-  Day,
-  Tasks,
-  WeekOfDay,
-} from "./styles";
+import { CalendarContainer, CalendarHeader, Dates, WeekOfDay } from "./styles";
 import {
   daysOfWeek,
   findHoliday,
   getDaysInMonth,
-  tasksForTheDay,
 } from "../../utils/calendar.utils";
 import useFetch from "../../hooks/useFetch";
 import api from "../../api";
-import { useSelector } from "react-redux";
-import { getCurrentCountry } from "../../store/slices/Calendar/Calendar.selectors";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCurrentCountry,
+  getTasks,
+} from "../../store/slices/Calendar/Calendar.selectors";
 import type { PublicHoliday, Task } from "../../types/calendar";
-import { DndProvider, useDrag, useDrop, DropResult } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import DayCell from "../DayCell/DayCell";
+import { setTask, updateTask } from "../../store/slices/Calendar/CalendarSlice";
 
 const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -127,39 +124,73 @@ const WeekRow: React.FC<{
   tasks: Task[];
   currentDate: Date;
   onAddTask: (title: string, description: string, date: Date) => void;
-}> = ({ days, holidays, tasks, currentDate, onAddTask }) => {
+}> = ({ days, holidays, currentDate }) => {
+  const dispatch = useDispatch();
+  const tasks = useSelector(getTasks);
+
+  const moveTask = (draggedTask: Task, targetDate: string) => {
+    dispatch(updateTask({ draggedTask, targetDate }));
+  };
+
+  const addNewTask = (title: string, date: string) => {
+    dispatch(
+      setTask({
+        id: tasks.length + 1,
+        title,
+        date,
+      }),
+    );
+  };
+
   return (
     <tr>
       {days.map((date) => {
         const holiday = findHoliday(date, holidays);
-        const dayTask = tasksForTheDay(tasks, date);
+
+        const fullDate = `${date.getFullYear()}-${
+          date.getMonth() + 1
+        }-${date.getDate()}`;
 
         return (
-          <Day
-            className={`calendar-day ${
-              date.getMonth() !== currentDate.getMonth() ? "inactive-day" : ""
-            } ${holiday ? "holiday-day" : ""}`}
-            key={date.toString()}>
-            <p
-              onClick={() => {
-                if (dayTask.length <= 6) {
-                  onAddTask("test", "description", date);
-                }
-              }}
-              style={{ cursor: "pointer" }}>
-              {date.getDate()}
-            </p>
-            {holiday && (
-              <span className='holiday-label'>{holiday.localName}</span>
-            )}
-            <Tasks>
-              {dayTask.map((task) => (
-                <li draggable onClick={() => null} key={task.id}>
-                  {task.title}
-                </li>
-              ))}
-            </Tasks>
-          </Day>
+          <DayCell
+            key={date.toString()}
+            day={date.getDate()}
+            fullDate={fullDate}
+            tasks={tasks.filter((t) => {
+              if (t.date === fullDate) {
+                return true;
+              }
+              return false;
+            })}
+            moveTask={moveTask}
+            inactive={date.getMonth() !== currentDate.getMonth()}
+            addNewTask={addNewTask}
+          />
+          // <Day
+          //   className={`calendar-day ${
+          //     date.getMonth() !== currentDate.getMonth() ? "inactive-day" : ""
+          //   } ${holiday ? "holiday-day" : ""}`}
+          //   key={date.toString()}>
+          // <p
+          //   onClick={() => {
+          //     if (dayTask.length <= 6) {
+          //       onAddTask("test", "description", date);
+          //     }
+          //   }}
+          //   style={{ cursor: "pointer" }}>
+          //   {date.getDate()}
+          // </p>
+          //   {holiday && (
+          //     <span className='holiday-label'>{holiday.localName}</span>
+          //   )}
+          // {/* <Tasks>
+          //   {dayTask.map((task) => (
+          //     <li draggable onClick={() => null} key={task.id}>
+          //       {task.title}
+          //     </li>
+          //   ))}
+          // </Tasks> */}
+          // </Day>
         );
       })}
     </tr>
