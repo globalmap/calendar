@@ -47,3 +47,8 @@ export interface Day {
   date: string; // "YYYY-MM-DD"
   tasks: Task[];
 }
+
+export interface CalendarData {
+  tasks: Task[];
+  holidays: PublicHoliday[];
+}

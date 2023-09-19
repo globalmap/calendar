@@ -1,6 +1,6 @@
 import { Task } from "../components/Calendar/Calendar";
 import Task from "../components/Task/Task";
-import { PublicHoliday } from "../types/calendar";
+import { CalendarData, PublicHoliday } from "../types/calendar";
 
 export const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -57,4 +57,17 @@ export const tasksForTheDay = (tasks: Task[], date: Date) => {
       taskDate.getFullYear() === date.getFullYear()
     );
   });
+};
+
+export const exportToJsonFile = (calendarData: CalendarData) => {
+  const dataStr = JSON.stringify(calendarData, null, 4);
+  const dataUri =
+    "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+
+  const exportFileDefaultName = "calendar_data.json";
+
+  const linkElement = document.createElement("a");
+  linkElement.setAttribute("href", dataUri);
+  linkElement.setAttribute("download", exportFileDefaultName);
+  linkElement.click();
 };

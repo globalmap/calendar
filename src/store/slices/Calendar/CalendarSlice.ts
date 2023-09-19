@@ -38,6 +38,15 @@ export const calendarSlice = createSlice({
     setTask: (state, action: PayloadAction<Task>) => {
       state.tasks = [...state.tasks, { ...action.payload, labels: [] }];
     },
+    setDataFromJSON: (
+      state,
+      action: PayloadAction<{ tasks: Task[]; holidays: PublicHoliday[] }>,
+    ) => {
+      const { tasks, holidays } = action.payload;
+
+      state.tasks = tasks;
+      state.publicHoliday = holidays;
+    },
     updateTask: (
       state,
       action: PayloadAction<{
@@ -158,6 +167,7 @@ export const {
   addLabelToTask,
   editTitleTask,
   editingLabelTask,
+  setDataFromJSON,
 } = calendarSlice.actions;
 
 export default calendarSlice.reducer;
