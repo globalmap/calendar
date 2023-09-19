@@ -45,6 +45,13 @@ export const Day = styled.td`
   background-color: #e9e9e9;
   height: 13rem;
   width: 0%;
+  vertical-align: top;
+  text-align: left;
+  padding: 1rem 0 0 1rem;
+
+  & .day-number {
+    font-weight: bold;
+  }
 
   &.inactive-day {
     background-color: #f9f9f9;

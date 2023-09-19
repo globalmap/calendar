@@ -23,10 +23,16 @@ export interface CountryInfo {
   borders: string[];
 }
 
+export interface LabelType {
+  title: string;
+  color: string;
+}
+
 export interface Task {
   id: number;
   title: string;
   date: string;
+  labels: LabelType[];
 }
 
 export interface DragItem {

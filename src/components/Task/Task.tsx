@@ -2,7 +2,8 @@ import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { DragItem, Task } from "../../types/calendar";
 import type { MoveFunction } from "../../types/ui.types";
-
+import { TaskTitle, TaskWrapper } from "./style";
+import Labels from "../Labels/Labels";
 
 interface TaskProps {
   task: Task;
@@ -23,10 +24,10 @@ const TaskItem: React.FC<TaskProps> = ({ task, moveTask }) => {
     },
   });
 
-  const [{ isDragging }, drag, preview] = useDrag({
+  const [{ isDragging }, drag] = useDrag({
     type: "TASK",
     item: { ...task, originalIndex },
-    collect: (monitor: any) => ({
+    collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
     end: (item, monitor) => {
@@ -52,9 +53,13 @@ const TaskItem: React.FC<TaskProps> = ({ task, moveTask }) => {
       refs.forEach((ref) => ref(node));
 
   return (
-    <div ref={combineRefs(drag, drop)} style={{ opacity: isDragging ? 0 : 1 }}>
-      {task.title}
-    </div>
+    <TaskWrapper
+      ref={combineRefs(drag, drop)}
+      style={{ opacity: isDragging ? 0 : 1 }}>
+      <Labels items={task.labels} />
+      <hr />
+      <TaskTitle>{task.title}</TaskTitle>
+    </TaskWrapper>
   );
 };
 

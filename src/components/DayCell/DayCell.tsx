@@ -53,13 +53,18 @@ const DayCell: React.FC<Props> = ({
     .join(" ");
 
   return (
-    <Day ref={ref} className={classNames}>
-      <p>{day}</p>
+    <Day
+      ref={ref}
+      className={classNames}
+      onDoubleClick={() => {
+        setIsAddingTask(true);
+      }}>
+      <p className='day-number'>{day}</p>
       {holiday && <span className='holiday-label'>{holiday.localName}</span>}
       {tasks.map((task) => (
         <TaskItem key={task.id} task={task} moveTask={moveTask} />
       ))}
-      {isAddingTask ? (
+      {isAddingTask && (
         <AddTaskInput
           value={taskTitle}
           onChange={(e) => setTaskTitle(e.target.value)}
@@ -67,14 +72,6 @@ const DayCell: React.FC<Props> = ({
           onKeyDown={handleKeyDown}
           autoFocus
         />
-      ) : (
-        <>
-          {tasks.length <= 6 && (
-            <AddTaskButton onClick={() => setIsAddingTask(true)}>
-              +
-            </AddTaskButton>
-          )}
-        </>
       )}
     </Day>
   );
