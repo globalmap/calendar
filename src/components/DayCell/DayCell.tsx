@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDrop } from "react-dnd";
 import TaskItem from "../Task/Task";
-import type { Task } from "../../types/calendar";
-import { Day, Tasks } from "../Calendar/styles";
+import { AddTaskButton, AddTaskInput, Day } from "../Calendar/styles";
+import type { MoveFunction } from "../../types/ui.types";
+import type { PublicHoliday, Task } from "../../types/calendar";
 
-type Props = {
+interface Props {
   day: number;
-  fullDate: string; // у форматі "yyyy-mm-dd"
+  fullDate: string;
   tasks: Task[];
-  moveTask: (draggedTask: Task, targetDate: string) => void;
+  moveTask: MoveFunction;
   inactive: boolean;
+  holiday: PublicHoliday | undefined;
   addNewTask: (title: string, date: string) => void;
-};
+}
 
 const DayCell: React.FC<Props> = ({
   fullDate,
@@ -20,26 +22,54 @@ const DayCell: React.FC<Props> = ({
   moveTask,
   inactive,
   addNewTask,
+  holiday,
 }) => {
+  const [isAddingTask, setIsAddingTask] = useState(false);
+  const [taskTitle, setTaskTitle] = useState("");
+
   const [, ref] = useDrop({
     accept: "TASK",
     drop: () => ({ date: fullDate }),
   });
 
+  const handleAddTask = () => {
+    if (taskTitle.trim()) {
+      addNewTask(taskTitle, fullDate);
+      setTaskTitle("");
+      setIsAddingTask(false);
+    }
+  };
+
   return (
-    <Day ref={ref} className={`calendar-day ${inactive ? "inactive-day" : ""}`}>
-      <p
-        onClick={() => {
-          addNewTask("TASK 3", fullDate);
-        }}
-        style={{ cursor: "pointer" }}>
-        {day}
-      </p>
-      <Tasks id='tasks'>
-        {tasks.map((task) => (
-          <TaskItem key={task.id} task={task} moveTask={moveTask} />
-        ))}
-      </Tasks>
+    <Day
+      ref={ref}
+      className={`calendar-day ${inactive ? "inactive-day" : ""} ${
+        holiday ? "holiday-day" : ""
+      }`}>
+      <p>{day}</p>
+      {holiday && <span className='holiday-label'>{holiday.localName}</span>}
+      {tasks.map((task) => (
+        <TaskItem key={task.id} task={task} moveTask={moveTask} />
+      ))}
+      {isAddingTask ? (
+        <AddTaskInput
+          value={taskTitle}
+          onChange={(e) => setTaskTitle(e.target.value)}
+          onBlur={handleAddTask}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAddTask();
+          }}
+          autoFocus
+        />
+      ) : (
+        <>
+          {tasks.length <= 6 && (
+            <AddTaskButton onClick={() => setIsAddingTask(true)}>
+              +
+            </AddTaskButton>
+          )}
+        </>
+      )}
     </Day>
   );
 };

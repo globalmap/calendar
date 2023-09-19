@@ -51,8 +51,8 @@ export const Day = styled.td`
     color: #b0b0b0;
   }
 
-  .holiday-day {
-    background-color: #ffcccb; /* Яскраво-червоний колір для виділення святкового дня */
+  &.holiday-day p {
+    color: red;
   }
 
   .holiday-label {
@@ -74,4 +74,20 @@ export const Tasks = styled.div`
     border-radius: 5px;
     padding: 0.5rem;
   }
+`;
+
+export const AddTaskButton = styled.button`
+  background: #d0dbd5;
+  border: solid 1px #cacaca;
+  padding: 4px;
+  border-radius: 7px;
+  cursor: pointer;
+
+  &:hover {
+    background: #97a19b;
+  }
+`;
+
+export const AddTaskInput = styled.input`
+  width: 50%;
 `;

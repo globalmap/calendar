@@ -38,18 +38,40 @@ export const calendarSlice = createSlice({
     },
     updateTask: (
       state,
-      action: PayloadAction<{ draggedTask: Task; targetDate: string }>,
+      action: PayloadAction<{
+        draggedId?: number;
+        overId?: number;
+        move?: {
+          draggedTask: Task;
+          targetDate: string;
+        };
+      }>,
     ) => {
-      const { draggedTask, targetDate } = action.payload;
+      const { draggedId, overId, move } = action.payload;
 
-      const updatedTasks = state.tasks.map((task) => {
-        if (task.id === draggedTask.id) {
-          return { ...task, date: targetDate };
-        }
-        return task;
-      });
+      const tasks = state.tasks;
 
-      state.tasks = updatedTasks;
+      if (move) {
+        const { draggedTask, targetDate } = move;
+        const updatedTasks = tasks.map((task) => {
+          if (task.id === draggedTask.id) {
+            return { ...task, date: targetDate };
+          }
+          return task;
+        });
+        state.tasks = updatedTasks;
+      } else {
+        const draggedTask = tasks.find((task) => task.id === draggedId)!;
+        const overTask = tasks.find((task) => task.id === overId)!;
+        const draggedIndex = tasks.indexOf(draggedTask);
+        const overIndex = tasks.indexOf(overTask);
+
+        const newTasks = [...tasks];
+        newTasks.splice(draggedIndex, 1);
+        newTasks.splice(overIndex, 0, draggedTask);
+
+        state.tasks = newTasks;
+      }
     },
   },
 });

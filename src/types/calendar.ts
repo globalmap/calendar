@@ -24,9 +24,16 @@ export interface CountryInfo {
 }
 
 export interface Task {
-  id: number | string;
+  id: number;
   title: string;
   date: string;
+}
+
+export interface DragItem {
+  type: string;
+  id: number;
+  date: string;
+  originalIndex: number;
 }
 
 export interface Day {

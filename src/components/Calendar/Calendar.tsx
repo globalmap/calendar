@@ -17,6 +17,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import DayCell from "../DayCell/DayCell";
 import { setTask, updateTask } from "../../store/slices/Calendar/CalendarSlice";
+import { MoveFunction } from "../../types/ui.types";
 
 const Calendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -128,8 +129,8 @@ const WeekRow: React.FC<{
   const dispatch = useDispatch();
   const tasks = useSelector(getTasks);
 
-  const moveTask = (draggedTask: Task, targetDate: string) => {
-    dispatch(updateTask({ draggedTask, targetDate }));
+  const moveTask: MoveFunction = ({ draggedId, overId, move }) => {
+    dispatch(updateTask({ draggedId, overId, move }));
   };
 
   const addNewTask = (title: string, date: string) => {
@@ -165,6 +166,7 @@ const WeekRow: React.FC<{
             moveTask={moveTask}
             inactive={date.getMonth() !== currentDate.getMonth()}
             addNewTask={addNewTask}
+            holiday={holiday}
           />
           // <Day
           //   className={`calendar-day ${
@@ -180,9 +182,7 @@ const WeekRow: React.FC<{
           //   style={{ cursor: "pointer" }}>
           //   {date.getDate()}
           // </p>
-          //   {holiday && (
-          //     <span className='holiday-label'>{holiday.localName}</span>
-          //   )}
+
           // {/* <Tasks>
           //   {dayTask.map((task) => (
           //     <li draggable onClick={() => null} key={task.id}>

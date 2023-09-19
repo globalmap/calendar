@@ -1,27 +1,58 @@
 import React from "react";
-import { useDrag } from "react-dnd";
-import type { Task } from "../../types/calendar";
+import { useDrag, useDrop } from "react-dnd";
+import type { DragItem, Task } from "../../types/calendar";
+import type { MoveFunction } from "../../types/ui.types";
 
 const type = "TASK";
 
-type Props = {
+const TaskItem: React.FC<{
   task: Task;
-  moveTask: (draggedTask: Task, targetDate: string) => void;
-};
+  moveTask: MoveFunction;
+}> = ({ task, moveTask }) => {
+  const originalIndex = task.id;
 
-const TaskItem: React.FC<Props> = ({ task, moveTask }) => {
-  const [, ref] = useDrag({
-    type,
-    item: task,
-    end: (item, monitor) => {
-      const dropResult = monitor.getDropResult();
-      if (item && dropResult) {
-        moveTask(item, dropResult.date);
+  const [, drop] = useDrop({
+    accept: "TASK",
+    canDrop: (item: DragItem) => item.id !== task.id,
+    hover(draggedItem: DragItem) {
+      if (draggedItem.id !== task.id) {
+        // moveTask(draggedItem.id, task.id);
+        moveTask({ draggedId: draggedItem.id, overId: task.id });
+        draggedItem.originalIndex = originalIndex;
       }
     },
   });
 
-  return <div ref={ref}>{task.title}</div>;
+  const [{ isDragging }, drag, preview] = useDrag({
+    type: "TASK",
+    item: { ...task, originalIndex },
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    end: (item, monitor) => {
+      const { id: droppedId, originalIndex } = monitor.getItem();
+      const didDrop = monitor.didDrop();
+      if (!didDrop) {
+        moveTask({ draggedId: droppedId, overId: originalIndex });
+      } else {
+        const dropResult = monitor.getDropResult();
+        moveTask({
+          move: {
+            draggedTask: item,
+            targetDate: dropResult.date,
+          },
+        });
+      }
+    },
+  });
+
+  const opacity = isDragging ? 0 : 1;
+
+  return (
+    <div ref={(node) => drag(drop(node))} style={{ opacity }}>
+      {task.title}
+    </div>
+  );
 };
 
 export default TaskItem;
