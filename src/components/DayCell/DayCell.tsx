@@ -5,20 +5,20 @@ import { AddTaskButton, AddTaskInput, Day } from "../Calendar/styles";
 import type { MoveFunction } from "../../types/ui.types";
 import type { PublicHoliday, Task } from "../../types/calendar";
 
-interface Props {
+interface DayCellProps {
   day: number;
   fullDate: string;
   tasks: Task[];
   moveTask: MoveFunction;
   inactive: boolean;
-  holiday: PublicHoliday | undefined;
+  holiday?: PublicHoliday;
   addNewTask: (title: string, date: string) => void;
   handleEditTask: (taskId: number, newTitle: string) => void;
 }
 
-const DayCell: React.FC<Props> = ({
-  fullDate,
+const DayCell: React.FC<DayCellProps> = ({
   day,
+  fullDate,
   tasks,
   moveTask,
   inactive,
@@ -46,16 +46,12 @@ const DayCell: React.FC<Props> = ({
     if (e.key === "Enter") handleAddTask();
   };
 
-  const classNames = [
-    "calendar-day",
-    inactive && "inactive-day",
-    holiday && "holiday-day",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const classNames = `calendar-day ${inactive ? "inactive-day" : ""} ${
+    holiday ? "holiday-day" : ""
+  }`;
 
   return (
-    <Day ref={ref} className={classNames}>
+    <Day ref={ref} className={classNames.trim()}>
       <p className='day-number'>{day}</p>
       {holiday && <span className='holiday-label'>{holiday.localName}</span>}
       {tasks.map((task) => (
@@ -75,13 +71,9 @@ const DayCell: React.FC<Props> = ({
           autoFocus
         />
       ) : (
-        <>
-          {tasks.length <= 6 && (
-            <AddTaskButton onClick={() => setIsAddingTask(true)}>
-              +
-            </AddTaskButton>
-          )}
-        </>
+        tasks.length <= 6 && (
+          <AddTaskButton onClick={() => setIsAddingTask(true)}>+</AddTaskButton>
+        )
       )}
     </Day>
   );

@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useFetch from "../../hooks/useFetch";
+import html2canvas from "html2canvas";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { CalendarContainer, CalendarHeader, Dates, WeekOfDay } from "./styles";
+import DayCell from "../DayCell/DayCell";
 import {
   daysOfWeek,
   findHoliday,
   getDaysInMonth,
 } from "../../utils/calendar.utils";
-import useFetch from "../../hooks/useFetch";
 import api from "../../api";
 import {
   getCurrentCountry,
   getTasks,
 } from "../../store/slices/Calendar/Calendar.selectors";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import DayCell from "../DayCell/DayCell";
 import {
   editTitleTask,
   setTask,
   updateTask,
 } from "../../store/slices/Calendar/CalendarSlice";
-import { CalendarContainer, CalendarHeader, Dates, WeekOfDay } from "./styles";
-import html2canvas from "html2canvas";
 import type { PublicHoliday } from "../../types/calendar";
 import type { MoveFunction } from "../../types/ui.types";
 
@@ -30,11 +30,11 @@ const Calendar: React.FC = () => {
   const [holidays, setHolidays] = useState<PublicHoliday[]>([]);
 
   const country = useSelector(getCurrentCountry);
-  const { data: fetchedHolidays } = useFetch(
+  const fetchedHolidays = useFetch(
     api.calendar.getHolidaysForYear,
     currentDate.getFullYear(),
     country.countryCode,
-  );
+  ).data;
 
   useEffect(() => {
     if (fetchedHolidays) {
@@ -50,30 +50,25 @@ const Calendar: React.FC = () => {
   };
 
   const handleSaveAsImage = async () => {
-    const calendarElement = document.getElementById("calendar"); // Припустимо, що у вашого календаря є id="calendar"
+    const calendarElement = document.getElementById("calendar");
+    if (!calendarElement) return;
 
-    if (calendarElement) {
-      try {
-        const canvas = await html2canvas(calendarElement);
-        const imgURL = canvas.toDataURL("image/png");
-
-        // Create a link to download the image
-        const link = document.createElement("a");
-        link.download = "calendar.png";
-        link.href = imgURL;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } catch (error) {
-        console.error("Error saving calendar as image:", error);
-      }
+    try {
+      const canvas = await html2canvas(calendarElement);
+      const link = document.createElement("a");
+      link.download = "calendar.png";
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error saving calendar as image:", error);
     }
   };
 
   return (
     <div>
       <button onClick={handleSaveAsImage}>Save Calendar as Image</button>
-
       <CalendarContainer id='calendar'>
         <Header currentDate={currentDate} onMonthChange={handleMonthChange} />
         <DateGrid currentDate={currentDate} holidays={holidays} />
@@ -82,7 +77,6 @@ const Calendar: React.FC = () => {
   );
 };
 
-// Header Component
 const Header: React.FC<{
   currentDate: Date;
   onMonthChange: (inc: number) => void;
@@ -97,7 +91,6 @@ const Header: React.FC<{
   </CalendarHeader>
 );
 
-// DateGrid Component
 const DateGrid: React.FC<{ currentDate: Date; holidays: PublicHoliday[] }> = ({
   currentDate,
   holidays,
@@ -130,7 +123,6 @@ const DateGrid: React.FC<{ currentDate: Date; holidays: PublicHoliday[] }> = ({
   );
 };
 
-// WeekRow Component
 const WeekRow: React.FC<{
   days: Date[];
   holidays: PublicHoliday[];
@@ -139,17 +131,11 @@ const WeekRow: React.FC<{
   const dispatch = useDispatch();
   const tasks = useSelector(getTasks);
 
-  const handleMoveTask: MoveFunction = (params) => {
-    dispatch(updateTask(params));
-  };
-
-  const handleAddNewTask = (title: string, date: string) => {
+  const handleMoveTask: MoveFunction = (params) => dispatch(updateTask(params));
+  const handleAddNewTask = (title: string, date: string) =>
     dispatch(setTask({ id: tasks.length + 1, title, date, labels: [] }));
-  };
-
-  const handleEditTask = (taskId: number, newTitle: string) => {
+  const handleEditTask = (taskId: number, newTitle: string) =>
     dispatch(editTitleTask({ id: taskId, newTitle }));
-  };
 
   return (
     <tr>

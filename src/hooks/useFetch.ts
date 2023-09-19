@@ -18,18 +18,32 @@ const useFetch = <R, P extends any[]>(
   const [isloading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchData = async () => {
+      setLoading(true); // Reset the loading state for every new fetch.
+
       try {
         const result: R = await apiMethod(...params);
-        setData(result);
+        if (isMounted) {
+          setData(result);
+        }
       } catch (err) {
-        setError(err as AxiosError);
+        if (isMounted) {
+          setError(err as AxiosError);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchData();
+
+    return () => {
+      isMounted = false; // Unsubscribe from the effect when component unmounts.
+    };
   }, [apiMethod, ...params]);
 
   return { data, error, isloading };

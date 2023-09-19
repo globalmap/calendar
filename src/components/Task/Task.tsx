@@ -14,7 +14,8 @@ interface TaskProps {
 }
 
 const TaskItem: React.FC<TaskProps> = ({ task, moveTask, editTask }) => {
-  const [taskName, setTaskName] = useState(task.title);
+  const { id, title, labels } = task;
+  const [taskName, setTaskName] = useState(title);
   const [isEditing, setEditing] = useState(false);
 
   const originalIndex = task.id;
@@ -58,37 +59,33 @@ const TaskItem: React.FC<TaskProps> = ({ task, moveTask, editTask }) => {
     (node: any) =>
       refs.forEach((ref) => ref(node));
 
+  const handleStartEditing = () => setEditing(true);
+  const handleFinishEditing = () => {
+    editTask(id, taskName);
+    setEditing(false);
+  };
+
   return (
     <TaskWrapper
       ref={combineRefs(drag, drop)}
       style={{ opacity: isDragging ? 0 : 1 }}>
-      <Labels items={task.labels} taskId={task.id} />
+      <Labels items={labels} taskId={id} />
       <hr />
       <TaskTitle>
         <p>
           {!isEditing ? (
             <>{taskName} </>
           ) : (
-            <>
-              <input
-                value={taskName}
-                style={{ width: "35%" }}
-                onChange={(e) => {
-                  setTaskName(e.target.value);
-                }}
-              />
-            </>
+            <input
+              value={taskName}
+              style={{ width: "35%" }}
+              onChange={(e) => setTaskName(e.target.value)}
+            />
           )}
           <FontAwesomeIcon
             icon={isEditing ? faCheck : faPencilSquare}
             style={{ cursor: "pointer" }}
-            onClick={() => {
-              if (isEditing) {
-                editTask(task.id, taskName);
-              }
-
-              setEditing(!isEditing);
-            }}
+            onClick={isEditing ? handleFinishEditing : handleStartEditing}
           />
         </p>
       </TaskTitle>

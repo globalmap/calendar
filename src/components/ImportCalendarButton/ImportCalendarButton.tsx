@@ -4,16 +4,19 @@ import { setDataFromJSON } from "../../store/slices/Calendar/CalendarSlice";
 
 function ImportCalendarButton() {
   const dispatch = useDispatch();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fileInputRef = useRef(null);
+  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file: File | undefined = event.target.files?.[0];
 
-  function handleFileChange(event) {
-    const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
+
       reader.onload = (e) => {
+        const { result } = e.target!;
+
         try {
-          const jsonData = JSON.parse(e.target.result);
+          const jsonData = JSON.parse(result as string);
           dispatch(setDataFromJSON(jsonData));
         } catch (error) {
           console.error("Error parsing JSON", error);
@@ -22,6 +25,7 @@ function ImportCalendarButton() {
           );
         }
       };
+
       reader.readAsText(file);
     }
   }
@@ -35,7 +39,7 @@ function ImportCalendarButton() {
         accept='.json'
         onChange={handleFileChange}
       />
-      <button onClick={() => fileInputRef.current.click()}>
+      <button onClick={() => fileInputRef.current?.click()}>
         Import Calendar
       </button>
     </div>

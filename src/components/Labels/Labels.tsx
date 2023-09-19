@@ -20,33 +20,26 @@ const Labels = ({ items, taskId }: { items: LabelType[]; taskId: number }) => {
     title: "",
   });
 
-  const handleAddingLabel = () => {
-    dispatch(addLabelToTask({ taskId, label: newLabel }));
-    setIsAdded(false);
-  };
-  const handleEditingLabel = () => {
-    dispatch(editingLabelTask({ taskId, updatelabel: newLabel }));
-    setEditing(false);
+  const handleLabelAction = () => {
+    if (isAdded) {
+      dispatch(addLabelToTask({ taskId, label: newLabel }));
+      setIsAdded(false);
+    } else if (editing) {
+      dispatch(editingLabelTask({ taskId, updatelabel: newLabel }));
+      setEditing(false);
+    }
   };
 
   return (
     <LabelWrapper>
-      {items.map((label, index) => (
+      {items.map((label) => (
         <LabelContainer
-          onDoubleClick={(e) => {
-            setNewLabel({
-              id: label.id,
-              title: label.title,
-              color: label.color,
-            });
+          onDoubleClick={() => {
+            setNewLabel(label);
             setEditing(true);
           }}
-          key={index}
-          style={
-            editing
-              ? { display: "none" }
-              : { display: "block", background: label.color }
-          }>
+          key={label.id}
+          style={editing ? { display: "none" } : { background: label.color }}>
           <p>{label.title}</p>
         </LabelContainer>
       ))}
@@ -69,12 +62,9 @@ const Labels = ({ items, taskId }: { items: LabelType[]; taskId: number }) => {
             <input
               style={{ width: "35%" }}
               value={newLabel.title}
-              onChange={(e) => {
-                setNewLabel({
-                  ...newLabel,
-                  title: e.target.value,
-                });
-              }}
+              onChange={(e) =>
+                setNewLabel((prev) => ({ ...prev, title: e.target.value }))
+              }
             />
             <input
               type='color'
@@ -85,25 +75,14 @@ const Labels = ({ items, taskId }: { items: LabelType[]; taskId: number }) => {
                 borderRadius: "5px",
               }}
               value={newLabel.color}
-              onChange={(e) => {
-                setNewLabel({
-                  ...newLabel,
-                  color: e.target.value,
-                });
-              }}
-              id='color-picker'
+              onChange={(e) =>
+                setNewLabel((prev) => ({ ...prev, color: e.target.value }))
+              }
             />
             <FontAwesomeIcon
               icon={faCheck}
               style={{ cursor: "pointer", color: "black" }}
-              onClick={() => {
-                if (isAdded) {
-                  handleAddingLabel();
-                }
-                if (editing) {
-                  handleEditingLabel();
-                }
-              }}
+              onClick={handleLabelAction}
             />
           </div>
         ) : (
